@@ -1,0 +1,33 @@
+{
+  "manifestVersion": 2,
+  "id": "hello-valence",
+  "name": "Hello, Valence",
+  "version": "0.1.0",
+  "apiVersion": "^1.0",
+  "author": { "name": "You" },
+  "description": "A plugin to start from: a page that remembers your name and counts your visits, and a theme.",
+  "permissions": [{ "kind": "storage", "quotaBytes": 100000 }],
+  "contributes": {
+    "pages": [{ "id": "hello", "title": "Hello", "placement": "account", "icon": "star" }],
+    "themes": [
+      {
+        "id": "harbour",
+        "name": "Harbour",
+        "corners": "round",
+        "dark": {
+          "accent": "#38bdf8",
+          "accentContrast": "#04121c",
+          "surface": "#0b1620",
+          "surfaceRaised": "#11202d",
+          "text": "#e6f1f8",
+          "textMuted": "#93a9b8",
+          "border": "#1f3444",
+          "danger": "#f87171",
+          "highlight": "#fbbf24",
+          "success": "#4ade80"
+        }
+      }
+    ]
+  },
+  "entry": "dist/plugin.js"
+}
