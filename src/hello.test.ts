@@ -5,7 +5,7 @@ import { renderHello } from './renderHello';
 
 const contextFor = (valence: ReturnType<typeof fakeValence>['valence']) => ({
   valence,
-  viewer: { profileId: 'p1', isAdmin: false },
+  viewer: { profileId: 'p1', isAdmin: false, nodes: [] },
   subject: null,
 });
 
