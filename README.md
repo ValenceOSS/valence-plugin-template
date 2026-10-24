@@ -50,6 +50,14 @@ pnpm install
 pnpm test
 ```
 
+The SDK, `@valence/plugin-sdk`, comes straight from the Valence repository, pinned to one commit in
+`package.json`, and `pnpm-lock.yaml` holds the rest to exact versions, so an install gives you what
+was tested. To move to a newer SDK, put a newer commit of `ValenceOSS/Valence` in its place in
+`package.json` and in the two `@valence/plugin-sdk` entries of `pnpm-lock.yaml`, keeping
+`path: /packages/plugin-sdk` in the entry's `resolution`, then run `pnpm install --frozen-lockfile`.
+pnpm leaves that `path` out when it resolves a git dependency itself, and then installs the whole
+repository in the SDK's place.
+
 `src/testing/fakeValence.ts` is a stand-in `valence`: storage is kept in memory, the web answers as
 your test says, and every method is a Vitest mock.
 
@@ -69,13 +77,14 @@ pnpm valence-plugin sign packages/hello-valence-0.1.0.vplugin --key keys/my-key.
 
 ## 5. Install it
 
-In Valence, go to **Admin → Plugins → Upload** and choose your `.vplugin`. A package that is not
-from the official catalogue is marked unsigned, and Valence asks you to confirm before installing
-it. Pages you contribute to `account` appear in each person's account area.
+In Valence, go to **Admin → Plugins → Install from a file** and choose your `.vplugin`, with its
+`.sig` if you signed it. A package that isn't signed by Valence, or by a key the server's
+administrator trusts, is marked unsigned, and Valence asks you to confirm before installing it.
+Pages you contribute to `account` appear in each person's account area.
 
 ## Going further
 
 The full guide, covering every permission, host method and building block, is at
-[docs.getvalence.app/develop/plugins](https://docs.getvalence.app/develop/plugins). Two complete
-plugins, for anime lists and playlist imports, are in
+[docs.getvalence.app/plugins/getting-started](https://docs.getvalence.app/plugins/getting-started).
+The official plugins, for anime lists, Trakt, ListenBrainz and playlist imports, are in
 [valence-plugins](https://github.com/ValenceOSS/valence-plugins).
