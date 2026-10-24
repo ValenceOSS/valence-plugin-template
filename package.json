@@ -16,15 +16,15 @@
     "format": "prettier --write ."
   },
   "dependencies": {
-    "@valence/plugin-sdk": "github:ValenceOSS/Valence#feat/val-297-plugin-system&path:/packages/plugin-sdk",
-    "zod": "^4.6.4"
+    "@valence/plugin-sdk": "git+https://github.com/ValenceOSS/Valence.git#ef025efe20efca24f7cd52d2d6416fb4df13e1fe&path:/packages/plugin-sdk",
+    "zod": "4.6.4"
   },
   "devDependencies": {
-    "@types/node": "^24.0.0",
-    "esbuild": "^0.28.2",
-    "prettier": "^3.6.2",
-    "tsx": "^4.23.13",
-    "typescript": "^5.9.3",
-    "vitest": "^4.1.11"
+    "@types/node": "24.19.2",
+    "esbuild": "0.28.2",
+    "prettier": "3.9.10",
+    "tsx": "4.23.15",
+    "typescript": "5.9.3",
+    "vitest": "4.1.12"
   }
 }

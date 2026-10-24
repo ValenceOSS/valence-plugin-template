@@ -1,6 +1,6 @@
 import { createHmac } from 'node:crypto';
 import { vi } from 'vitest';
-import type { MediaRef, Stored, ValenceHost } from '@ValenceSDK/host/ValenceHost';
+import type { MediaRef, PlaylistContents, Stored, ValenceHost } from '@ValenceSDK/host/ValenceHost';
 
 type Answer = { status: number; text: string };
 
@@ -14,18 +14,22 @@ type FakeOptions = {
   library?: MediaRef[];
   finished?: string[];
   profiles?: { id: string; name: string }[];
+  playlists?: PlaylistContents[];
 };
 
 /**
- * A stand-in `valence` for testing a plugin without a server: storage is a map, the web answers as
- * the test says, and every call is a Vitest mock you can inspect or change.
+ * A stand-in `valence` for testing a plugin without a server: storage and secrets are maps, the web
+ * answers as the test says, and every call is a Vitest mock you can inspect or change.
  *
- * @param options - The settings, web answers, connected accounts and library this test starts with.
- * @returns The stand-in, and the storage behind it.
+ * @param options - The settings, web answers, connected accounts, library and playlists this test
+ * starts with.
+ * @returns The stand-in, and the storage and secrets behind it.
  */
 const fakeValence = (options: FakeOptions = {}) => {
   const stored = new Map<string, Stored>();
+  const secrets = new Map<string, string>();
   const library = options.library ?? [];
+  const playlists = new Map((options.playlists ?? []).map((playlist) => [playlist.id, playlist]));
   const host = {
     plugin: { id: 'test', version: '1.0.0' },
     settings: { read: vi.fn(() => Promise.resolve(options.settings ?? {})) },
@@ -44,6 +48,28 @@ const fakeValence = (options: FakeOptions = {}) => {
       }),
       keys: vi.fn((prefix = '') =>
         Promise.resolve([...stored.keys()].filter((key) => key.startsWith(prefix))),
+      ),
+    },
+    secrets: {
+      get: vi.fn((profileId: string, key: string) =>
+        Promise.resolve(secrets.get(`${profileId}:${key}`) ?? null),
+      ),
+      set: vi.fn((profileId: string, key: string, value: string) => {
+        secrets.set(`${profileId}:${key}`, value);
+
+        return Promise.resolve();
+      }),
+      delete: vi.fn((profileId: string, key: string) => {
+        secrets.delete(`${profileId}:${key}`);
+
+        return Promise.resolve();
+      }),
+      keys: vi.fn((profileId: string) =>
+        Promise.resolve(
+          [...secrets.keys()]
+            .filter((kept) => kept.startsWith(`${profileId}:`))
+            .map((kept) => kept.slice(profileId.length + 1)),
+        ),
       ),
     },
     http: {
@@ -66,6 +92,9 @@ const fakeValence = (options: FakeOptions = {}) => {
       list: vi.fn(() => Promise.resolve(options.profiles ?? [{ id: 'p1', name: 'Marques' }])),
     },
     library: {
+      get: vi.fn((mediaId: string) =>
+        Promise.resolve(library.find((media) => media.id === mediaId) ?? null),
+      ),
       search: vi.fn((query: string, kinds?: MediaRef['kind'][]) =>
         Promise.resolve(
           library.filter(
@@ -102,6 +131,9 @@ const fakeValence = (options: FakeOptions = {}) => {
     requests: {
       searchCatalogue: vi.fn<ValenceHost['requests']['searchCatalogue']>(() => Promise.resolve([])),
       create: vi.fn<ValenceHost['requests']['create']>(() => Promise.resolve({ status: 'made' })),
+      missingAlbums: vi.fn<ValenceHost['requests']['missingAlbums']>(() =>
+        Promise.resolve({ isMatching: false, albums: [] }),
+      ),
     },
     playlists: {
       list: vi.fn<ValenceHost['playlists']['list']>(() => Promise.resolve([])),
@@ -109,6 +141,21 @@ const fakeValence = (options: FakeOptions = {}) => {
         Promise.resolve({ id: 'playlist-1' }),
       ),
       add: vi.fn<ValenceHost['playlists']['add']>(() => Promise.resolve()),
+      read: vi.fn((_profileId: string, playlistId: string) =>
+        Promise.resolve(playlists.get(playlistId) ?? null),
+      ),
+      drop: vi.fn((_profileId: string, playlistId: string, entryId: string) => {
+        const playlist = playlists.get(playlistId);
+
+        if (playlist !== undefined) {
+          playlists.set(playlistId, {
+            ...playlist,
+            entries: playlist.entries.filter((entry) => entry.entryId !== entryId),
+          });
+        }
+
+        return Promise.resolve();
+      }),
     },
     music: { findTrack: vi.fn<ValenceHost['music']['findTrack']>(() => Promise.resolve(null)) },
     notifications: { send: vi.fn(() => Promise.resolve()) },
@@ -123,7 +170,7 @@ const fakeValence = (options: FakeOptions = {}) => {
     },
   } satisfies ValenceHost;
 
-  return { valence: host, stored };
+  return { valence: host, stored, secrets };
 };
 
 export { fakeValence };
