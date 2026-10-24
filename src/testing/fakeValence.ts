@@ -136,7 +136,9 @@ const fakeValence = (options: FakeOptions = {}) => {
       ),
     },
     playlists: {
-      list: vi.fn<ValenceHost['playlists']['list']>(() => Promise.resolve([])),
+      list: vi.fn<ValenceHost['playlists']['list']>(() =>
+        Promise.resolve([...playlists.values()].map(({ id, name }) => ({ id, name }))),
+      ),
       create: vi.fn<ValenceHost['playlists']['create']>(() =>
         Promise.resolve({ id: 'playlist-1' }),
       ),
