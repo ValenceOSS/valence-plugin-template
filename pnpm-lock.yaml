@@ -313,7 +313,7 @@ packages:
     resolution: {integrity: sha512-93d49wCWJkCyN87MxLpNN6KXPCwFw7bVUg79mGUV1OS40JGWwVCr8n61DXCSqz7CV6/VfPkb7xec7uP2M+QHWQ==}
 
   '@valence/plugin-sdk@https://codeload.github.com/ValenceOSS/Valence/tar.gz/ef025efe20efca24f7cd52d2d6416fb4df13e1fe#path:/packages/plugin-sdk':
-    resolution: {gitHosted: true, integrity: sha512-EBb0OJHh8LnhCBbMB25Td/jGw6YjpziWO7QYRzy0aVhrl+OhWVFNlGkXx+oBYvZadt1NMxlZDxUn+y4Yd+yDzg==, tarball: https://codeload.github.com/ValenceOSS/Valence/tar.gz/ef025efe20efca24f7cd52d2d6416fb4df13e1fe}
+    resolution: {gitHosted: true, path: /packages/plugin-sdk, tarball: https://codeload.github.com/ValenceOSS/Valence/tar.gz/ef025efe20efca24f7cd52d2d6416fb4df13e1fe}
     version: 0.0.0
 
   '@vitest/expect@4.1.12':

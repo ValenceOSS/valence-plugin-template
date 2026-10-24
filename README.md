@@ -52,8 +52,11 @@ pnpm test
 
 The SDK, `@valence/plugin-sdk`, comes straight from the Valence repository, pinned to one commit in
 `package.json`, and `pnpm-lock.yaml` holds the rest to exact versions, so an install gives you what
-was tested. To move to a newer SDK, put a newer commit of `ValenceOSS/Valence` in its place and run
-`pnpm install`.
+was tested. To move to a newer SDK, put a newer commit of `ValenceOSS/Valence` in its place in
+`package.json` and in the two `@valence/plugin-sdk` entries of `pnpm-lock.yaml`, keeping
+`path: /packages/plugin-sdk` in the entry's `resolution`, then run `pnpm install --frozen-lockfile`.
+pnpm leaves that `path` out when it resolves a git dependency itself, and then installs the whole
+repository in the SDK's place.
 
 `src/testing/fakeValence.ts` is a stand-in `valence`: storage is kept in memory, the web answers as
 your test says, and every method is a Vitest mock.
